@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { formatPrice } from "@/lib/data";
 import { useCart } from "@/context/CartContext";
 
@@ -9,7 +10,7 @@ export default function CartPage() {
 
 
   return (
-    <div className="min-h-screen pt-32 pb-24 bg-[var(--color-brand-warm-white)]">
+    <div className="min-h-screen pt-20 lg:pt-24 pb-24 bg-[var(--color-brand-warm-white)]">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <h1 className="text-5xl lg:text-7xl font-heading text-[var(--color-brand-dark)]">
           Your <span className="text-[var(--color-brand-maroon)] italic">Cart</span>
@@ -19,8 +20,18 @@ export default function CartPage() {
           {/* Left Column: Cart Items */}
           <div className="flex-1">
             <div className="border-t border-black/10">
-              {cartItems.map((item) => (
-                <div key={item.id} className="flex gap-6 sm:gap-10 border-b border-black/10 py-8">
+              {cartItems.length === 0 ? (
+                <div className="py-16 flex flex-col items-start border-b border-black/10">
+                  <p className="font-heading text-xl lg:text-2xl text-[var(--color-brand-charcoal)] mb-8">
+                    Your cart is currently empty.
+                  </p>
+                  <Link href="/collections" className="bg-[var(--color-brand-dark)] text-white px-8 py-4 uppercase tracking-widest text-sm font-semibold hover:bg-[var(--color-brand-maroon)] transition-colors">
+                    Continue Shopping
+                  </Link>
+                </div>
+              ) : (
+                cartItems.map((item) => (
+                  <div key={item.id} className="flex gap-6 sm:gap-10 border-b border-black/10 py-8">
                   <div className="relative w-24 sm:w-32 aspect-[4/5] shrink-0 bg-[var(--color-brand-silk)]">
                     <Image
                       src={item.image}
@@ -71,7 +82,8 @@ export default function CartPage() {
                     </div>
                   </div>
                 </div>
-              ))}
+              ))
+              )}
             </div>
           </div>
 

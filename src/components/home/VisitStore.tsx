@@ -9,7 +9,7 @@ export default function VisitStore() {
   return (
     <section className="bg-[var(--color-brand-ivory)] relative">
       <div className="grid grid-cols-1 lg:grid-cols-2">
-        <div className="relative aspect-square lg:aspect-auto lg:h-[80vh] w-full overflow-hidden bg-[var(--color-brand-silk)]">
+        <div className="relative aspect-square lg:aspect-auto lg:h-[80vh] w-full overflow-hidden bg-[var(--color-brand-silk)] hidden lg:block">
           <Image 
             src="/images/heritage.png"
             alt="Boutique Experience"
@@ -19,7 +19,7 @@ export default function VisitStore() {
           <div className="absolute inset-0 bg-black/20" />
         </div>
 
-        <div className="flex items-center justify-center py-24 px-6 lg:px-16">
+        <div className="flex items-center justify-center py-10 lg:py-24 px-6 lg:px-16">
           <motion.div 
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}

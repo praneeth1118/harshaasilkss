@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { products } from "@/lib/data";
 import ProductCard from "@/components/product-card";
 import { Filter, X } from "lucide-react";
@@ -8,19 +9,43 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function CollectionsPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedFabric, setSelectedFabric] = useState("All");
+  const [sortBy, setSortBy] = useState("Featured");
+  
   const categories = ["All", "Kanchipuram", "Banarasi", "Bridal", "Designer"];
 
+  const filteredProducts = products.filter((product) => {
+    const categoryMatch = selectedCategory === "All" || product.category === selectedCategory;
+    const fabricMatch = selectedFabric === "All" || product.fabric.toLowerCase().includes(selectedFabric.toLowerCase());
+    return categoryMatch && fabricMatch;
+  }).sort((a, b) => {
+    if (sortBy === "Price: Low to High") return a.price - b.price;
+    if (sortBy === "Price: High to Low") return b.price - a.price;
+    if (sortBy === "Newest Arrivals") return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0);
+    return 0;
+  });
+
   return (
-    <div className="pt-32 pb-24 min-h-screen bg-[var(--color-brand-ivory)]">
+    <div className="pt-20 lg:pt-24 pb-24 min-h-screen bg-[var(--color-brand-ivory)]">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Header */}
         <div className="text-center mb-20 max-w-2xl mx-auto">
+          <div className="text-[10px] tracking-[0.3em] uppercase text-[var(--color-brand-charcoal)] mb-6 font-semibold flex gap-2 items-center justify-center">
+            <Link href="/" className="hover:text-[var(--color-brand-maroon)] transition-colors">
+              Home
+            </Link>
+            <span>/</span>
+            <Link href="/collections" className="hover:text-[var(--color-brand-maroon)] transition-colors">
+              Collections
+            </Link>
+            <span>/</span>
+            <span className="text-[var(--color-brand-maroon)]">All</span>
+          </div>
           <h1 className="text-5xl lg:text-7xl font-heading text-[var(--color-brand-dark)] mb-6">
             Our <span className="text-[var(--color-brand-maroon)] italic">Collections</span>
           </h1>
-          <p className="font-body text-[var(--color-brand-charcoal)] leading-relaxed">
-            Discover the epitome of Indian luxury. Each piece is handwoven to perfection, celebrating centuries of tradition and artistry.
-          </p>
+          <div className="w-16 h-[1px] bg-[var(--color-brand-gold)] mx-auto mt-8"></div>
         </div>
 
         {/* Filters Layout */}
@@ -31,9 +56,12 @@ export default function CollectionsPage() {
               <div>
                 <h3 className="font-heading text-xl mb-4">Categories</h3>
                 <ul className="space-y-3">
-                  {categories.map((category, idx) => (
+                  {categories.map((category) => (
                     <li key={category}>
-                      <button className={`text-sm tracking-widest uppercase transition-colors ${idx === 0 ? "text-[var(--color-brand-maroon)] font-semibold" : "text-[var(--color-brand-charcoal)] hover:text-[var(--color-brand-gold)]"}`}>
+                      <button 
+                        onClick={() => setSelectedCategory(category)}
+                        className={`cursor-pointer text-sm tracking-widest uppercase transition-colors ${selectedCategory === category ? "text-[var(--color-brand-maroon)] font-semibold" : "text-[var(--color-brand-charcoal)] hover:text-[var(--color-brand-gold)]"}`}
+                      >
                         {category}
                       </button>
                     </li>
@@ -44,11 +72,14 @@ export default function CollectionsPage() {
               <div className="border-t border-black/10 pt-8">
                 <h3 className="font-heading text-xl mb-4">Fabric</h3>
                 <ul className="space-y-3">
-                  {["Pure Silk", "Tissue Silk", "Organza", "Silk Blend"].map((fabric) => (
+                  {["All", "Pure Silk", "Tissue Silk", "Organza", "Silk Blend"].map((fabric) => (
                     <li key={fabric}>
-                      <label className="flex items-center gap-3 cursor-pointer group">
-                        <div className="w-4 h-4 border border-black/20 group-hover:border-[var(--color-brand-gold)] transition-colors flex items-center justify-center" />
-                        <span className="text-sm tracking-widest uppercase text-[var(--color-brand-charcoal)] group-hover:text-[var(--color-brand-gold)] transition-colors">
+                      <label 
+                        className="flex items-center gap-3 cursor-pointer group"
+                        onClick={() => setSelectedFabric(fabric)}
+                      >
+                        <div className={`w-4 h-4 border transition-colors flex items-center justify-center ${selectedFabric === fabric ? "border-[var(--color-brand-maroon)] bg-[var(--color-brand-maroon)]" : "border-black/20 group-hover:border-[var(--color-brand-gold)]"}`} />
+                        <span className={`text-sm tracking-widest uppercase transition-colors ${selectedFabric === fabric ? "text-[var(--color-brand-maroon)] font-semibold" : "text-[var(--color-brand-charcoal)] group-hover:text-[var(--color-brand-gold)]"}`}>
                           {fabric}
                         </span>
                       </label>
@@ -66,18 +97,22 @@ export default function CollectionsPage() {
                 <Filter className="w-4 h-4"/> Filters
               </button>
               <span className="hidden md:block text-sm tracking-widest uppercase text-[var(--color-brand-charcoal)]">
-                {products.length} Products
+                {filteredProducts.length} Products
               </span>
-              <select className="bg-transparent text-sm tracking-widest uppercase text-[var(--color-brand-dark)] border-none outline-none focus:ring-0 cursor-pointer ml-auto md:ml-0">
-                <option>Sort by: Featured</option>
-                <option>Price: Low to High</option>
-                <option>Price: High to Low</option>
-                <option>Newest Arrivals</option>
+              <select 
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-transparent text-sm tracking-widest uppercase text-[var(--color-brand-dark)] border-none outline-none focus:ring-0 cursor-pointer ml-auto md:ml-0"
+              >
+                <option value="Featured">Sort by: Featured</option>
+                <option value="Price: Low to High">Price: Low to High</option>
+                <option value="Price: High to Low">Price: High to Low</option>
+                <option value="Newest Arrivals">Newest Arrivals</option>
               </select>
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-12 sm:gap-x-6 sm:gap-y-16">
-              {products.map((product, index) => (
+              {filteredProducts.map((product, index) => (
                 <motion.div
                   key={product.id}
                   initial={{ opacity: 0, y: 30 }}

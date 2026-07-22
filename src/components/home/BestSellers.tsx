@@ -23,9 +23,6 @@ export default function BestSellers() {
             <h2 className="text-4xl lg:text-6xl font-heading text-[var(--color-brand-dark)]">
               Best <span className="text-[var(--color-brand-maroon)] italic">Sellers</span>
             </h2>
-            <p className="mt-4 font-body text-[var(--color-brand-charcoal)] max-w-md leading-relaxed">
-              Our most coveted pieces, celebrated for their timeless elegance and masterful craftsmanship.
-            </p>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, x: 20 }}

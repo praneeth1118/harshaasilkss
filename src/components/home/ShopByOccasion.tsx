@@ -8,8 +8,8 @@ const occasions = [
   { title: "Weddings", image: "/images/collection_bridal.png", colSpan: "col-span-2 lg:col-span-8", aspect: "aspect-[21/9] lg:aspect-[21/9]" },
   { title: "Festivals", image: "/images/hero.png", colSpan: "col-span-1 lg:col-span-4", aspect: "aspect-square" },
   { title: "Reception", image: "/images/collection_kanchi.png", colSpan: "col-span-1 lg:col-span-4", aspect: "aspect-square" },
-  { title: "Temple", image: "/images/heritage.png", colSpan: "col-span-2 lg:col-span-4", aspect: "aspect-square lg:aspect-[3/4]" },
-  { title: "Party Wear", image: "/images/collection_bridal.png", colSpan: "col-span-2 lg:col-span-4", aspect: "aspect-[16/9] lg:aspect-[3/4]" }
+  { title: "Temple", image: "/images/heritage.png", colSpan: "col-span-2 lg:col-span-4", aspect: "aspect-[21/9] lg:aspect-[3/4]" },
+  { title: "Party Wear", image: "/images/collection_bridal.png", colSpan: "col-span-2 lg:col-span-4", aspect: "aspect-[21/9] lg:aspect-[3/4]" }
 ];
 
 export default function ShopByOccasion() {

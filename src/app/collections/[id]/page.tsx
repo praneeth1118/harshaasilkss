@@ -19,7 +19,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   }
 
   return (
-    <div className="pt-32 pb-24 min-h-screen bg-[var(--color-brand-ivory)]">
+    <div className="pt-20 lg:pt-24 pb-24 min-h-screen bg-[var(--color-brand-ivory)]">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Breadcrumb / Back Navigation */}
         <Link 

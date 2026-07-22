@@ -25,15 +25,6 @@ export default function ShopByFabric() {
           >
             The <span className="text-[var(--color-brand-gold)] italic">Textures</span> of Heritage
           </motion.h2>
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="font-body text-[var(--color-brand-charcoal)] leading-relaxed"
-          >
-            Explore our collections through the tactile beauty of authentic Indian fabrics.
-          </motion.p>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">

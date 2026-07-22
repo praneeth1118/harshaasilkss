@@ -20,7 +20,7 @@ const mockOrders = [
 
 export default function ProfilePage() {
   return (
-    <div className="min-h-screen pt-32 pb-24 bg-[var(--color-brand-ivory)]">
+    <div className="min-h-screen pt-20 lg:pt-24 pb-24 bg-[var(--color-brand-ivory)]">
       {/* Header */}
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <h1 className="text-5xl lg:text-7xl font-heading text-[var(--color-brand-dark)] text-center lg:text-left">

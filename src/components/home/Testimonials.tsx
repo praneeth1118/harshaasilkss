@@ -29,7 +29,7 @@ export default function Testimonials() {
 
   return (
     <section className="py-10 lg:py-16 bg-[var(--color-brand-maroon)] text-[var(--color-brand-ivory)] relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
         
         <div className="lg:col-span-5 relative z-10">
           <motion.h2 
@@ -37,12 +37,12 @@ export default function Testimonials() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="text-4xl lg:text-6xl font-heading mb-12"
+            className="text-4xl lg:text-6xl font-heading mb-0 lg:mb-12 text-center lg:text-left"
           >
             Words of <br/><span className="text-[var(--color-brand-gold)] italic">Love</span>
           </motion.h2>
           
-          <div className="flex gap-4">
+          <div className="hidden lg:flex gap-4">
             <button 
               onClick={() => setCurrent((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1))}
               className="w-12 h-12 rounded-full border border-[var(--color-brand-gold)] flex items-center justify-center text-[var(--color-brand-gold)] hover:bg-[var(--color-brand-gold)] hover:text-[var(--color-brand-maroon)] transition-colors"
@@ -77,12 +77,12 @@ export default function Testimonials() {
                 {[1,2,3,4,5].map(i => <Star key={i} className="w-4 h-4 fill-current" />)}
               </div>
               
-              <p className="font-heading text-2xl lg:text-3xl leading-relaxed mb-10 relative z-10">
+              <p className="font-heading text-xl sm:text-2xl lg:text-3xl text-center lg:text-left leading-relaxed mb-10 relative z-10">
                 {testimonials[current].quote}
               </p>
               
-              <div className="flex items-center gap-6 border-t border-white/10 pt-8 relative z-10">
-                <div className="w-16 h-16 relative rounded-full overflow-hidden bg-[var(--color-brand-silk)]">
+              <div className="flex flex-col lg:flex-row items-center lg:items-start text-center lg:text-left gap-4 lg:gap-6 border-t border-white/10 pt-8 relative z-10">
+                <div className="w-16 h-16 relative rounded-full overflow-hidden bg-[var(--color-brand-silk)] hidden lg:block">
                   <Image src={testimonials[current].image} alt={testimonials[current].name} fill className="object-cover" />
                 </div>
                 <div>
@@ -94,6 +94,20 @@ export default function Testimonials() {
               </div>
             </motion.div>
           </AnimatePresence>
+          <div className="flex lg:hidden justify-center mt-8 gap-6">
+            <button 
+              onClick={() => setCurrent((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1))}
+              className="w-12 h-12 rounded-full border border-[var(--color-brand-gold)] flex items-center justify-center text-[var(--color-brand-gold)] hover:bg-[var(--color-brand-gold)] hover:text-[var(--color-brand-maroon)] transition-colors"
+            >
+              &larr;
+            </button>
+            <button 
+              onClick={() => setCurrent((prev) => (prev + 1) % testimonials.length)}
+              className="w-12 h-12 rounded-full border border-[var(--color-brand-gold)] flex items-center justify-center text-[var(--color-brand-gold)] hover:bg-[var(--color-brand-gold)] hover:text-[var(--color-brand-maroon)] transition-colors"
+            >
+              &rarr;
+            </button>
+          </div>
         </div>
 
       </div>

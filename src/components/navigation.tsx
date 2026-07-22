@@ -37,13 +37,13 @@ export default function Navigation() {
           <Menu className="w-6 h-6" />
         </button>
         <nav className="hidden lg:flex items-center gap-8">
-          <Link href="/collections" className="text-sm font-medium tracking-wide uppercase hover:text-[var(--color-brand-maroon)] transition-colors">
+          <Link href="/collections" className="font-heading text-base lg:text-lg tracking-wide hover:text-[var(--color-brand-maroon)] transition-colors">
             Collections
           </Link>
-          <Link href="/wedding" className="text-sm font-medium tracking-wide uppercase hover:text-[var(--color-brand-maroon)] transition-colors">
+          <Link href="/wedding" className="font-heading text-base lg:text-lg tracking-wide hover:text-[var(--color-brand-maroon)] transition-colors">
             Wedding
           </Link>
-          <Link href="/new-arrivals" className="text-sm font-medium tracking-wide uppercase hover:text-[var(--color-brand-maroon)] transition-colors">
+          <Link href="/new-arrivals" className="font-heading text-base lg:text-lg tracking-wide hover:text-[var(--color-brand-maroon)] transition-colors">
             New Arrivals
           </Link>
         </nav>
@@ -139,7 +139,7 @@ export default function Navigation() {
               </div>
 
               {/* Bottom Section: Imagery */}
-              <div className="mt-auto p-6">
+              <div className="mt-auto p-6 pb-16 sm:pb-20">
                 <Link href="/collections" onClick={() => setIsMobileMenuOpen(false)} className="block relative h-32 sm:h-40 w-full overflow-hidden rounded-md group shadow-md">
                   <Image 
                     src="/images/collection_kanchi.png"
