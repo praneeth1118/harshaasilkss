@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowUp } from "lucide-react";
 
 const InstagramIcon = ({ className }: { className?: string }) => (
@@ -18,9 +19,15 @@ const FacebookIcon = ({ className }: { className?: string }) => (
 );
 
 export default function Footer() {
+  const pathname = usePathname();
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <footer className="relative bg-[var(--color-brand-dark)] text-white pt-24 pb-12 overflow-hidden">
@@ -84,7 +91,7 @@ export default function Footer() {
               <li><Link href="#" className="hover:text-white transition-colors">FAQ</Link></li>
               <li><Link href="#" className="hover:text-white transition-colors">Shipping & Returns</Link></li>
               <li><Link href="#" className="hover:text-white transition-colors">Care Instructions</Link></li>
-              <li><Link href="#" className="hover:text-white transition-colors">Track Order</Link></li>
+              <li><Link href="/track" className="hover:text-white transition-colors">Track Order</Link></li>
             </ul>
           </div>
         </div>

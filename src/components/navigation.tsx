@@ -3,22 +3,30 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
 import { Search, ShoppingBag, User, Menu, X } from "lucide-react";
 import { PaisleyIcon } from "@/components/icons";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Navigation() {
+  const pathname = usePathname();
   const { scrollY } = useScroll();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const { cartItems } = useCart();
+  const { isAuthenticated } = useAuth();
   const totalCartItems = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     setIsScrolled(latest > 50);
   });
+
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <motion.header
@@ -63,7 +71,7 @@ export default function Navigation() {
           <Link href="/search" aria-label="Search" className="hover:text-[var(--color-brand-maroon)] transition-colors">
             <Search className="w-5 h-5" strokeWidth={1.5} />
           </Link>
-          <Link href="/profile" aria-label="Profile" className="hidden sm:block hover:text-[var(--color-brand-maroon)] transition-colors">
+          <Link href={isAuthenticated ? "/profile" : "/login"} aria-label={isAuthenticated ? "Profile" : "Sign In"} className="hidden sm:block hover:text-[var(--color-brand-maroon)] transition-colors">
             <User className="w-5 h-5" strokeWidth={1.5} />
           </Link>
           <Link href="/wishlist" aria-label="Wishlist" className="hover:text-[var(--color-brand-maroon)] transition-colors">
@@ -134,6 +142,13 @@ export default function Navigation() {
                     className="text-2xl font-heading text-[var(--color-brand-dark)] border-b border-black/5 pb-4 hover:text-[var(--color-brand-maroon)] transition-colors"
                   >
                     New Arrivals
+                  </Link>
+                  <Link 
+                    href={isAuthenticated ? "/profile" : "/login"} 
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="text-2xl font-heading text-[var(--color-brand-dark)] border-b border-black/5 pb-4 hover:text-[var(--color-brand-maroon)] transition-colors mt-8"
+                  >
+                    {isAuthenticated ? "My Account" : "Sign In / Register"}
                   </Link>
                 </nav>
               </div>

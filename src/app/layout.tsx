@@ -5,6 +5,8 @@ import LenisProvider from "@/components/lenis-provider";
 import Navigation from "@/components/navigation";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { CartProvider } from "@/context/CartContext";
+import { OrderProvider } from "@/context/OrderContext";
+import { AuthProvider } from "@/context/AuthContext";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -42,17 +44,21 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${cormorant.variable} ${manrope.variable} ${playfair.variable}`}>
       <body className="antialiased selection:bg-brand-gold selection:text-white">
-        <CartProvider>
-          <WishlistProvider>
-            <LenisProvider>
-              <Navigation />
-              <main className="min-h-screen">
-                {children}
-              </main>
-              <Footer />
-            </LenisProvider>
-          </WishlistProvider>
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            <OrderProvider>
+              <WishlistProvider>
+                <LenisProvider>
+                  <Navigation />
+                  <main className="min-h-screen">
+                    {children}
+                  </main>
+                  <Footer />
+                </LenisProvider>
+              </WishlistProvider>
+            </OrderProvider>
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -108,9 +108,21 @@ export default function CartPage() {
                 <span>{formatPrice(cartTotal)}</span>
               </div>
               
-              <button className="w-full py-4 bg-[var(--color-brand-dark)] text-white uppercase tracking-widest text-sm hover:bg-[var(--color-brand-charcoal)] transition-colors duration-300">
-                Proceed to Checkout
-              </button>
+              {cartItems.length === 0 ? (
+                <button 
+                  disabled
+                  className="w-full py-4 text-white uppercase tracking-widest text-sm transition-colors duration-300 bg-black/20 cursor-not-allowed"
+                >
+                  Proceed to Checkout
+                </button>
+              ) : (
+                <Link 
+                  href="/checkout"
+                  className="block text-center w-full py-4 text-white uppercase tracking-widest text-sm transition-colors duration-300 bg-[var(--color-brand-dark)] hover:bg-[var(--color-brand-maroon)] cursor-pointer"
+                >
+                  Proceed to Checkout
+                </Link>
+              )}
             </div>
           </div>
         </div>
