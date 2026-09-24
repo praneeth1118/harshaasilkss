@@ -1,6 +1,5 @@
 "use client";
 
-import { products } from "@/lib/data";
 import ProductCard from "@/components/product-card";
 import Link from "next/link";
 import { motion } from "framer-motion";

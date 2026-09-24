@@ -31,6 +31,13 @@ export interface StoreSettings {
   currency: string;
 }
 
+export interface StoreContent {
+  heroHeadline: string;
+  heroSubtext: string;
+  heroImageUrl: string;
+  announcementBar: string;
+}
+
 const initialOrdersList: AdminOrder[] = [
   {
     id: "#ORD-9512",
@@ -145,16 +152,26 @@ const initialStoreSettings: StoreSettings = {
   currency: "INR (₹)",
 };
 
+const initialStoreContent: StoreContent = {
+  heroHeadline: "Elegance Woven in Threads",
+  heroSubtext: "Discover our latest Kanchipuram and Banarasi bridal collections.",
+  heroImageUrl: "/images/hero.png",
+  announcementBar: "Complimentary Insured Delivery Across India on Orders Over ₹20,000",
+};
+
 interface AdminContextType {
   adminProducts: Product[];
   adminOrders: AdminOrder[];
   adminCustomers: AdminCustomer[];
   storeSettings: StoreSettings;
+  storeContent: StoreContent;
   addProduct: (product: Product) => void;
+  updateProduct: (id: string, updatedData: Partial<Product>) => void;
   deleteProduct: (id: string) => void;
   updateOrderStatus: (orderId: string, newStatus: AdminOrder["status"]) => void;
   deleteCustomer: (id: string) => void;
   updateSettings: (newSettings: Partial<StoreSettings>) => void;
+  updateContent: (newContent: Partial<StoreContent>) => void;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -164,9 +181,16 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const [adminOrders, setAdminOrders] = useState<AdminOrder[]>(initialOrdersList);
   const [adminCustomers, setAdminCustomers] = useState<AdminCustomer[]>(initialCustomersList);
   const [storeSettings, setStoreSettings] = useState<StoreSettings>(initialStoreSettings);
+  const [storeContent, setStoreContent] = useState<StoreContent>(initialStoreContent);
 
   const addProduct = (product: Product) => {
     setAdminProducts((prev) => [product, ...prev]);
+  };
+
+  const updateProduct = (id: string, updatedData: Partial<Product>) => {
+    setAdminProducts((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, ...updatedData } : p))
+    );
   };
 
   const deleteProduct = (id: string) => {
@@ -192,6 +216,10 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     setStoreSettings((prev) => ({ ...prev, ...newSettings }));
   };
 
+  const updateContent = (newContent: Partial<StoreContent>) => {
+    setStoreContent((prev) => ({ ...prev, ...newContent }));
+  };
+
   return (
     <AdminContext.Provider
       value={{
@@ -199,11 +227,14 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         adminOrders,
         adminCustomers,
         storeSettings,
+        storeContent,
         addProduct,
+        updateProduct,
         deleteProduct,
         updateOrderStatus,
         deleteCustomer,
         updateSettings,
+        updateContent,
       }}
     >
       {children}

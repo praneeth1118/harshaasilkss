@@ -7,6 +7,7 @@ import { WishlistProvider } from "@/context/WishlistContext";
 import { CartProvider } from "@/context/CartContext";
 import { OrderProvider } from "@/context/OrderContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { AdminProvider } from "@/context/AdminContext";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -44,21 +45,23 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${cormorant.variable} ${manrope.variable} ${playfair.variable}`}>
       <body className="antialiased selection:bg-brand-gold selection:text-white">
-        <AuthProvider>
-          <CartProvider>
-            <OrderProvider>
-              <WishlistProvider>
-                <LenisProvider>
-                  <Navigation />
-                  <main className="min-h-screen">
-                    {children}
-                  </main>
-                  <Footer />
-                </LenisProvider>
-              </WishlistProvider>
-            </OrderProvider>
-          </CartProvider>
-        </AuthProvider>
+        <AdminProvider>
+          <AuthProvider>
+            <CartProvider>
+              <OrderProvider>
+                <WishlistProvider>
+                  <LenisProvider>
+                    <Navigation />
+                    <main className="min-h-screen">
+                      {children}
+                    </main>
+                    <Footer />
+                  </LenisProvider>
+                </WishlistProvider>
+              </OrderProvider>
+            </CartProvider>
+          </AuthProvider>
+        </AdminProvider>
       </body>
     </html>
   );

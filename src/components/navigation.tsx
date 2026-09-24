@@ -9,6 +9,7 @@ import { Search, ShoppingBag, User, Menu, X } from "lucide-react";
 import { PaisleyIcon } from "@/components/icons";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
+import { useAdmin } from "@/context/AdminContext";
 
 export default function Navigation() {
   const pathname = usePathname();
@@ -18,6 +19,7 @@ export default function Navigation() {
   
   const { cartItems } = useCart();
   const { isAuthenticated } = useAuth();
+  const { storeContent } = useAdmin();
   const totalCartItems = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
@@ -29,12 +31,20 @@ export default function Navigation() {
   }
 
   return (
-    <motion.header
-      className={`sticky top-0 z-[100] transition-all duration-500 bg-[var(--color-brand-ivory)] text-[var(--color-brand-dark)] shadow-sm border-b border-[var(--color-brand-gold)]/20 ${isScrolled ? "py-5 lg:py-6 shadow-md" : "py-6 lg:py-8"}`}
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-    >
+    <>
+      {/* Top Announcement Bar */}
+      {storeContent?.announcementBar && !isScrolled && (
+        <div className="bg-[var(--color-brand-dark)] text-[var(--color-brand-gold)] py-2 px-4 text-center text-xs tracking-widest uppercase font-medium border-b border-[var(--color-brand-gold)]/20 transition-all duration-300">
+          {storeContent.announcementBar}
+        </div>
+      )}
+
+      <motion.header
+        className={`sticky top-0 z-[100] transition-all duration-500 bg-[var(--color-brand-ivory)] text-[var(--color-brand-dark)] shadow-sm border-b border-[var(--color-brand-gold)]/20 ${isScrolled ? "py-5 lg:py-6 shadow-md" : "py-6 lg:py-8"}`}
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      >
       <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
         {/* Left Links & Mobile Menu Toggle */}
         <button 
@@ -173,6 +183,7 @@ export default function Navigation() {
           </>
         )}
       </AnimatePresence>
-    </motion.header>
+      </motion.header>
+    </>
   );
 }

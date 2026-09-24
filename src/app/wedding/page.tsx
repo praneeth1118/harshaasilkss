@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { products } from "@/lib/data";
+import { useAdmin } from "@/context/AdminContext";
 import ProductCard from "@/components/product-card";
 import { Filter, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function WeddingPage() {
+  const { adminProducts: products } = useAdmin();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedFabric, setSelectedFabric] = useState("All");

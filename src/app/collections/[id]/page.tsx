@@ -1,28 +1,65 @@
-import { notFound } from "next/navigation";
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Heart, Share2, Truck, ShieldCheck, Clock } from "lucide-react";
-import { products, formatPrice } from "@/lib/data";
+import { useParams } from "next/navigation";
+import { ArrowLeft, Share2, Truck, ShieldCheck, Clock, Check } from "lucide-react";
+import { formatPrice } from "@/lib/data";
+import { useAdmin } from "@/context/AdminContext";
+import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
+import { PaisleyIcon } from "@/components/icons";
 
-export function generateStaticParams() {
-  return products.map((product) => ({
-    id: product.id,
-  }));
-}
+export default function ProductDetailPage() {
+  const params = useParams();
+  const id = params?.id as string;
+  const { adminProducts } = useAdmin();
+  const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+  const [addedToCart, setAddedToCart] = useState(false);
+  const [copiedShare, setCopiedShare] = useState(false);
 
-export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = await params;
-  const product = products.find((p) => p.id === resolvedParams.id);
-  
+  const product = adminProducts.find((p) => p.id === id);
+
   if (!product) {
-    notFound();
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-6 pt-28 pb-20 bg-[var(--color-brand-ivory)]">
+        <h1 className="font-heading text-4xl lg:text-5xl text-[var(--color-brand-dark)] mb-4">
+          Product Not Found
+        </h1>
+        <p className="text-sm text-[var(--color-brand-charcoal)] max-w-md mb-8">
+          The luxury saree you are searching for might have been retired from our catalog or is currently unavailable.
+        </p>
+        <Link
+          href="/collections"
+          className="bg-[var(--color-brand-dark)] text-white px-8 py-3.5 uppercase tracking-widest text-xs font-semibold hover:bg-[var(--color-brand-maroon)] transition-colors shadow-sm"
+        >
+          Return to Collections
+        </Link>
+      </div>
+    );
   }
+
+  const handleAddToCart = () => {
+    addToCart(product);
+    setAddedToCart(true);
+    setTimeout(() => setAddedToCart(false), 2500);
+  };
+
+  const handleShare = () => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(window.location.href);
+      setCopiedShare(true);
+      setTimeout(() => setCopiedShare(false), 2000);
+    }
+  };
 
   return (
     <div className="pt-20 lg:pt-24 pb-24 min-h-screen bg-[var(--color-brand-ivory)]">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Breadcrumb / Back Navigation */}
-        <Link 
+        <Link
           href="/collections"
           className="inline-flex items-center gap-2 text-sm tracking-widest uppercase text-[var(--color-brand-charcoal)] hover:text-[var(--color-brand-maroon)] transition-colors mb-12"
         >
@@ -32,8 +69,8 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
           {/* Left: Large Image Gallery */}
           <div className="lg:col-span-7 space-y-6">
-            <div className="aspect-[3/4] relative w-full bg-[var(--color-brand-silk)] overflow-hidden">
-              <Image 
+            <div className="aspect-[3/4] relative w-full bg-[var(--color-brand-silk)] overflow-hidden rounded-xs">
+              <Image
                 src={product.image}
                 alt={product.name}
                 fill
@@ -41,15 +78,16 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
                 priority
               />
             </div>
-            {/* Additional gallery placeholders */}
-            <div className="grid grid-cols-2 gap-6">
-              <div className="aspect-[3/4] relative w-full bg-[var(--color-brand-silk)] overflow-hidden">
-                <Image src={product.image} alt={product.name} fill className="object-cover" />
+            {/* Additional gallery images */}
+            {product.images && product.images.length > 0 && (
+              <div className="grid grid-cols-2 gap-6 mt-6">
+                {product.images.map((imgUrl, index) => (
+                  <div key={index} className="aspect-[3/4] relative w-full bg-[var(--color-brand-silk)] overflow-hidden">
+                    <Image src={imgUrl} alt={`${product.name} detail ${index + 1}`} fill className="object-cover" />
+                  </div>
+                ))}
               </div>
-              <div className="aspect-[3/4] relative w-full bg-[var(--color-brand-silk)] overflow-hidden">
-                <Image src={product.image} alt={product.name} fill className="object-cover" />
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Right: Sticky Purchase Panel */}
@@ -65,48 +103,87 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
                 <p className="font-price text-3xl text-[var(--color-brand-charcoal)]">
                   {formatPrice(product.price)}
                 </p>
-                <p className="text-sm text-black/50 mt-2 tracking-wide">Inclusive of all taxes</p>
+                <p className="text-sm text-black/50 mt-2 tracking-wide">
+                  Inclusive of all luxury taxes & complimentary insured shipping
+                </p>
               </div>
 
-              <div className="space-y-6 mb-10">
+              <div className="space-y-4 mb-10">
                 <div className="flex gap-4">
-                  <button className="flex-1 bg-[var(--color-brand-dark)] text-white py-4 text-sm tracking-widest uppercase font-semibold hover:bg-[var(--color-brand-maroon)] transition-colors">
-                    Add to Cart
+                  <button
+                    onClick={handleAddToCart}
+                    className={`flex-1 py-4 text-sm tracking-widest uppercase font-semibold transition-colors duration-300 flex items-center justify-center gap-2 ${
+                      addedToCart
+                        ? "bg-emerald-800 text-white"
+                        : "bg-[var(--color-brand-dark)] text-white hover:bg-[var(--color-brand-maroon)]"
+                    }`}
+                  >
+                    {addedToCart ? (
+                      <>
+                        <Check className="w-4 h-4" /> Added to Cart
+                      </>
+                    ) : (
+                      "Add to Cart"
+                    )}
                   </button>
-                  <button className="w-14 shrink-0 border border-black/20 flex items-center justify-center text-[var(--color-brand-charcoal)] hover:text-[var(--color-brand-maroon)] hover:border-[var(--color-brand-maroon)] transition-colors">
-                    <Heart className="w-5 h-5" strokeWidth={1.5} />
+                  <button
+                    onClick={() => toggleWishlist(product)}
+                    aria-label="Toggle Wishlist"
+                    className={`w-14 shrink-0 border border-black/20 flex items-center justify-center transition-colors ${
+                      isInWishlist(product.id)
+                        ? "text-[var(--color-brand-maroon)] border-[var(--color-brand-maroon)] bg-[var(--color-brand-maroon)]/5"
+                        : "text-[var(--color-brand-charcoal)] hover:text-[var(--color-brand-maroon)] hover:border-[var(--color-brand-maroon)]"
+                    }`}
+                  >
+                    <PaisleyIcon
+                      className={`w-5 h-5 ${isInWishlist(product.id) ? "fill-current" : ""}`}
+                      strokeWidth={1.5}
+                    />
                   </button>
                 </div>
-                <button className="w-full border border-black/20 py-4 text-sm tracking-widest uppercase font-semibold text-[var(--color-brand-charcoal)] hover:border-black transition-colors flex justify-center items-center gap-2">
-                  <Share2 className="w-4 h-4" /> Share This Piece
+
+                <button
+                  type="button"
+                  onClick={handleShare}
+                  className="w-full border border-black/20 py-3.5 text-xs tracking-widest uppercase font-semibold text-[var(--color-brand-charcoal)] hover:border-black transition-colors flex justify-center items-center gap-2"
+                >
+                  <Share2 className="w-4 h-4" />
+                  {copiedShare ? "Link Copied to Clipboard!" : "Share This Piece"}
                 </button>
               </div>
 
               {/* Value Props */}
               <div className="grid grid-cols-1 gap-4 mb-10 text-sm tracking-widest uppercase text-[var(--color-brand-charcoal)] border-b border-black/10 pb-8">
                 <div className="flex items-center gap-4">
-                  <Truck className="w-5 h-5 text-[var(--color-brand-gold)]" strokeWidth={1.5} /> Free Express Delivery
+                  <Truck className="w-5 h-5 text-[var(--color-brand-gold)]" strokeWidth={1.5} />
+                  Free Express Delivery
                 </div>
                 <div className="flex items-center gap-4">
-                  <ShieldCheck className="w-5 h-5 text-[var(--color-brand-gold)]" strokeWidth={1.5} /> Authentic Handloom
+                  <ShieldCheck className="w-5 h-5 text-[var(--color-brand-gold)]" strokeWidth={1.5} />
+                  Authentic Silk Mark Certified Handloom
                 </div>
                 <div className="flex items-center gap-4">
-                  <Clock className="w-5 h-5 text-[var(--color-brand-gold)]" strokeWidth={1.5} /> 7-Day Returns
+                  <Clock className="w-5 h-5 text-[var(--color-brand-gold)]" strokeWidth={1.5} />
+                  7-Day Return Guarantee
                 </div>
               </div>
 
-              {/* Accordions Placeholder for Fabric, Care, etc. */}
+              {/* Accordions for Fabric, Care, etc. */}
               <div className="space-y-6 font-body">
                 <div>
-                  <h3 className="font-heading text-xl border-b border-black/10 pb-2 mb-4">Fabric Details</h3>
+                  <h3 className="font-heading text-xl border-b border-black/10 pb-2 mb-4">
+                    Fabric Details
+                  </h3>
                   <p className="text-sm text-[var(--color-brand-charcoal)] leading-relaxed">
-                    Crafted from {product.fabric.toLowerCase()}, this piece features intricate zari work that takes master weavers weeks to perfect. The {product.color.toLowerCase()} hue makes it a timeless addition to your luxury wardrobe.
+                    Crafted from {product.fabric ? product.fabric.toLowerCase() : "pure handloom silk"}, this piece features intricate zari work that takes master weavers weeks to perfect. The {product.color ? product.color.toLowerCase() : "classic"} hue makes it a timeless addition to your luxury wardrobe.
                   </p>
                 </div>
                 <div>
-                  <h3 className="font-heading text-xl border-b border-black/10 pb-2 mb-4">Care Instructions</h3>
+                  <h3 className="font-heading text-xl border-b border-black/10 pb-2 mb-4">
+                    Care Instructions
+                  </h3>
                   <p className="text-sm text-[var(--color-brand-charcoal)] leading-relaxed">
-                    Dry clean only. Store in a breathable cotton bag. Do not use perfumes directly on the fabric.
+                    Dry clean only. Store in a breathable muslin or cotton saree bag. Do not spray perfumes directly on the silk fabric or zari borders.
                   </p>
                 </div>
               </div>

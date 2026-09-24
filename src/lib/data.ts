@@ -4,6 +4,7 @@ export interface Product {
   price: number;
   category: "Kanchipuram" | "Banarasi" | "Bridal" | "Designer";
   image: string;
+  images?: string[];
   isNew?: boolean;
   fabric: string;
   color: string;

@@ -74,7 +74,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Metrics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {metrics.map((metric) => {
           const Icon = metric.icon;
           return (
@@ -124,8 +124,8 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-gray-600">
+        <div className="overflow-x-auto w-full pb-4">
+          <table className="w-full min-w-[700px] text-left text-sm text-gray-600">
             <thead className="bg-gray-50/80 text-[11px] uppercase tracking-wider text-gray-500 border-b border-gray-200">
               <tr>
                 <th className="px-6 py-3.5 font-semibold">Order ID</th>

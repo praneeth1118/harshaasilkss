@@ -1,12 +1,13 @@
 "use client";
 
-import { products } from "@/lib/data";
+import { useAdmin } from "@/context/AdminContext";
 import ProductCard from "@/components/product-card";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
 export default function BestSellers() {
+  const { adminProducts: products } = useAdmin();
   // Take first 4 products for Best Sellers
   const bestSellers = products.slice(0, 4);
 

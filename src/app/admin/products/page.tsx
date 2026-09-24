@@ -4,12 +4,14 @@ import { useState } from "react";
 import Image from "next/image";
 import { formatPrice, Product } from "@/lib/data";
 import { useAdmin } from "@/context/AdminContext";
-import { Plus, Pencil, Trash2, Search, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, X, Check } from "lucide-react";
 
 export default function AdminProductsPage() {
-  const { adminProducts, addProduct, deleteProduct } = useAdmin();
+  const { adminProducts, addProduct, updateProduct, deleteProduct } = useAdmin();
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [editImagesText, setEditImagesText] = useState("");
 
   const filteredProducts = adminProducts.filter((p) =>
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -23,7 +25,9 @@ export default function AdminProductsPage() {
     const name = formData.get("name") as string;
     const price = Number(formData.get("price")) || 25000;
     const category = formData.get("category") as Product["category"];
-    const image = (formData.get("image") as string) || "/images/collection_bridal.png";
+    const imageInputString = (formData.get("image") as string) || "/images/collection_bridal.png";
+    const images = imageInputString.split(',').map(url => url.trim()).filter(url => url !== "");
+    const image = images[0] || "/images/collection_bridal.png";
     const fabric = (formData.get("fabric") as string) || "Pure Silk";
     const color = (formData.get("color") as string) || "Classic";
 
@@ -33,12 +37,37 @@ export default function AdminProductsPage() {
       price,
       category,
       image,
+      images,
       fabric,
       color,
     };
 
     addProduct(newProduct);
     setIsAddModalOpen(false);
+  };
+
+  const handleOpenEditModal = (product: Product) => {
+    setEditingProduct(product);
+    setEditImagesText(
+      product.images && product.images.length > 0
+        ? product.images.join(", ")
+        : product.image
+    );
+  };
+
+  const handleUpdateProduct = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!editingProduct) return;
+
+    const images = editImagesText.split(',').map(url => url.trim()).filter(url => url !== "");
+    const updatedProduct: Product = {
+      ...editingProduct,
+      images,
+      image: images[0] || editingProduct.image || "/images/collection_bridal.png",
+    };
+
+    updateProduct(editingProduct.id, updatedProduct);
+    setEditingProduct(null);
   };
 
   const handleDelete = (id: string) => {
@@ -66,7 +95,7 @@ export default function AdminProductsPage() {
           className="cursor-pointer bg-[var(--color-brand-dark)] text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-[var(--color-brand-maroon)] transition-colors inline-flex items-center gap-2 self-start sm:self-auto shadow-xs"
         >
           <Plus className="w-4 h-4" />
-          <span>+ Add New Product</span>
+          <span>Add New Product</span>
         </button>
       </div>
 
@@ -89,8 +118,8 @@ export default function AdminProductsPage() {
 
       {/* Product Table */}
       <div className="bg-white rounded-xl border border-gray-200/80 shadow-xs overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-gray-600">
+        <div className="overflow-x-auto w-full pb-4">
+          <table className="w-full min-w-[800px] text-left text-sm text-gray-600">
             <thead className="bg-gray-50/80 text-[11px] uppercase tracking-wider text-gray-500 border-b border-gray-200">
               <tr>
                 <th className="px-6 py-4 font-semibold">Product</th>
@@ -156,6 +185,7 @@ export default function AdminProductsPage() {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           type="button"
+                          onClick={() => handleOpenEditModal(product)}
                           aria-label="Edit product"
                           className="cursor-pointer p-1.5 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
                         >
@@ -241,12 +271,13 @@ export default function AdminProductsPage() {
 
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Image URL
+                  Image URLs (comma separated)
                 </label>
-                <input
+                <textarea
                   name="image"
-                  type="text"
+                  rows={2}
                   defaultValue="/images/collection_bridal.png"
+                  placeholder="e.g. /images/collection_bridal.png, /images/collection_kanchi.png"
                   className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-[var(--color-brand-maroon)] focus:ring-1 focus:ring-[var(--color-brand-maroon)] text-xs text-gray-500"
                 />
               </div>
@@ -289,6 +320,147 @@ export default function AdminProductsPage() {
                   className="cursor-pointer px-6 py-2.5 bg-[var(--color-brand-maroon)] text-white text-xs uppercase tracking-wider font-semibold rounded-lg hover:bg-[var(--color-brand-dark)] transition-colors"
                 >
                   Save Product
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Product Modal */}
+      {editingProduct && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl border border-gray-100 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+              <h3 className="text-xl font-heading font-semibold text-gray-900">
+                Edit Product
+              </h3>
+              <button
+                type="button"
+                onClick={() => setEditingProduct(null)}
+                className="cursor-pointer text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateProduct} className="py-6 space-y-4 text-sm">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Product Name *
+                </label>
+                <input
+                  required
+                  type="text"
+                  value={editingProduct.name}
+                  onChange={(e) =>
+                    setEditingProduct({ ...editingProduct, name: e.target.value })
+                  }
+                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-[var(--color-brand-maroon)] focus:ring-1 focus:ring-[var(--color-brand-maroon)]"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Price (INR) *
+                  </label>
+                  <input
+                    required
+                    type="number"
+                    value={editingProduct.price}
+                    onChange={(e) =>
+                      setEditingProduct({
+                        ...editingProduct,
+                        price: Number(e.target.value),
+                      })
+                    }
+                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-[var(--color-brand-maroon)] focus:ring-1 focus:ring-[var(--color-brand-maroon)]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Category *
+                  </label>
+                  <select
+                    value={editingProduct.category}
+                    onChange={(e) =>
+                      setEditingProduct({
+                        ...editingProduct,
+                        category: e.target.value as Product["category"],
+                      })
+                    }
+                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-[var(--color-brand-maroon)] bg-white font-medium"
+                  >
+                    <option value="Kanchipuram">Kanchipuram</option>
+                    <option value="Banarasi">Banarasi</option>
+                    <option value="Bridal">Bridal</option>
+                    <option value="Designer">Designer</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Image URLs (comma separated)
+                </label>
+                <textarea
+                  rows={2}
+                  value={editImagesText}
+                  onChange={(e) => setEditImagesText(e.target.value)}
+                  placeholder="e.g. /images/collection_bridal.png, /images/collection_kanchi.png"
+                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-[var(--color-brand-maroon)] focus:ring-1 focus:ring-[var(--color-brand-maroon)] text-xs text-gray-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Fabric
+                  </label>
+                  <input
+                    type="text"
+                    value={editingProduct.fabric || ""}
+                    onChange={(e) =>
+                      setEditingProduct({
+                        ...editingProduct,
+                        fabric: e.target.value,
+                      })
+                    }
+                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-[var(--color-brand-maroon)]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Color
+                  </label>
+                  <input
+                    type="text"
+                    value={editingProduct.color || ""}
+                    onChange={(e) =>
+                      setEditingProduct({
+                        ...editingProduct,
+                        color: e.target.value,
+                      })
+                    }
+                    className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-[var(--color-brand-maroon)]"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-gray-100 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setEditingProduct(null)}
+                  className="cursor-pointer px-4 py-2.5 border border-gray-200 text-gray-600 text-xs uppercase tracking-wider font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="cursor-pointer px-6 py-2.5 bg-[var(--color-brand-maroon)] text-white text-xs uppercase tracking-wider font-semibold rounded-lg hover:bg-[var(--color-brand-dark)] transition-colors"
+                >
+                  Save Changes
                 </button>
               </div>
             </form>

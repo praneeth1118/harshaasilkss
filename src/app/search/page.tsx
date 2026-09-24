@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { products } from "@/lib/data";
+import { useAdmin } from "@/context/AdminContext";
 import ProductCard from "@/components/product-card";
 import { Filter, X, Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function SearchPage() {
+  const { adminProducts: products } = useAdmin();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const categories = ["All", "Kanchipuram", "Banarasi", "Bridal", "Designer"];

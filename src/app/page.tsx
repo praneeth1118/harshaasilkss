@@ -51,10 +51,12 @@ const heroSlides = [
 ];
 
 import CuratedCollections from "@/components/home/CuratedCollections";
+import { useAdmin } from "@/context/AdminContext";
 
 export default function Home() {
   const containerRef = useRef(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const { storeContent } = useAdmin();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -64,6 +66,11 @@ export default function Home() {
   }, []);
 
   const slide = heroSlides[currentSlide];
+  const isFirstSlide = currentSlide === 0;
+
+  const currentImage = isFirstSlide && storeContent?.heroImageUrl ? storeContent.heroImageUrl : slide.mainImage;
+  const currentHeadline = isFirstSlide && storeContent?.heroHeadline ? storeContent.heroHeadline : `${slide.titleLine1} ${slide.titleLine2}`;
+  const currentSubtext = isFirstSlide && storeContent?.heroSubtext ? storeContent.heroSubtext : slide.subtitle;
 
   return (
     <div ref={containerRef} className="relative">
@@ -71,7 +78,7 @@ export default function Home() {
       <section className="relative h-[85vh] min-h-[700px] w-full overflow-hidden flex items-center justify-center bg-[var(--color-brand-dark)]">
         <AnimatePresence mode="wait">
           <motion.div
-            key={currentSlide}
+            key={currentSlide + currentImage}
             initial={{ opacity: 0, scale: 1.05 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
@@ -79,8 +86,8 @@ export default function Home() {
             className="absolute inset-0 w-full h-full"
           >
             <Image
-              src={slide.mainImage}
-              alt={slide.titleLine1}
+              src={currentImage}
+              alt={currentHeadline}
               fill
               className="object-cover"
               priority
@@ -93,7 +100,7 @@ export default function Home() {
         <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-12 flex flex-col items-center text-center">
           <AnimatePresence mode="wait">
             <motion.div
-              key={currentSlide + "-text"}
+              key={currentSlide + currentHeadline}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -30 }}
@@ -102,11 +109,11 @@ export default function Home() {
               <span className="inline-block px-5 py-2 text-xs tracking-widest uppercase text-[var(--color-brand-gold)] font-semibold mb-6 border border-[var(--color-brand-gold)]/40 rounded-full bg-black/40 shadow-sm">
                 {slide.taglineTitle} - {slide.taglineSub}
               </span>
-              <h1 className="text-5xl lg:text-[7rem] font-heading text-white leading-[1.1] mb-6 drop-shadow-lg">
-                {slide.titleLine1} <span className="italic font-light">{slide.titleLine2}</span>
+              <h1 className="text-5xl lg:text-[7rem] font-heading text-white leading-[1.1] mb-6 drop-shadow-lg max-w-5xl">
+                {currentHeadline}
               </h1>
               <p className="font-body text-lg text-white/90 max-w-2xl mx-auto leading-relaxed mb-10 drop-shadow-md">
-                {slide.subtitle}
+                {currentSubtext}
               </p>
               <Link
                 href="/collections"
